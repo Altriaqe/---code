@@ -38,7 +38,21 @@ def load_all_assets():
     ASSETS["brick"] = load_image("static/img/brick.png")
     ASSETS["no_fruit"] = load_image("static/img/nonaeanimal.png")
     ASSETS["time_is_over"] = load_image("static/img/time_is_over.png")
+    # 创建值为列表的字典，列表中存储每种水果的图片
     ASSETS["digit"] = [load_image(f"static/img/digit_{i}.png") for i in range(10)]
+    ASSETS["fruit"] = [load_image(f"static/img/fruit_{name}.png") for name in 
+                       ('lemon', 'watermelon', 'grapefruit', 'kiwfruit', 'nettedmelon', 'avocado')]   
+    # 加载bling8.png图片，作为消除水果时的特效图片
+    ASSETS["bling8"] = load_image("static/img/bling8.png")
+
+    # 加载字体，如果加载失败则使用默认字体
+    try:
+        ASSETS["font_large"] = pygame.font.Font("static/font/zhengqingke", 43)
+        ASSETS["font_small"] = pygame.font.Font("static/font/zhengqingke", 35)
+    except:
+        ASSETS["font_large"] = pygame.font.Font(None, 43)
+        ASSETS["font_small"] = pygame.font.Font(None, 35)
+
 
 class Manager:
     def __init__(self, screen):
