@@ -25,3 +25,6 @@ Thumbs.db
 
 # Specific report document
 樊锦华-信息工程学院实训报告.doc
+
+.gitignore
+.vscode/
