@@ -22,7 +22,7 @@ STATUS_SCORE = 2
 
 # 具体加载一个图片或字体
 def load_image(path):
-    return pygame.image.load(path).convert().alpha() # 加载图片并转换为带有alpha通道的格式，支持透明背景
+    return pygame.image.load(path).convert().alpha()  # 加载图片并转换为带有alpha通道的格式，支持透明背景
 
 
 # 加载图片到内存
@@ -96,7 +96,8 @@ class Manager:
         self.score = 0
         self.destory_counts = [0] * 6
         self.runtime = 0
-        self.start_time = pygame.time.get_ticks()
+        self.start_time = pygame.time.get_ticks()  # 记录游戏开始时间
+        self.time_is_over = False
         self.death_sign = False
         self.animating = False
         self.cur_sel = [-1, -1]
@@ -108,12 +109,22 @@ class Manager:
         self.end_img = None
         self.end_timer = 0
 
+
     def go_to_score(self):
-        # 计算分数并显示分数界面
-        pass
+        # 记录总分分数并显示分数界面
+        if not self._score_recoreded:
+            self.score_list.append(self.score)
+            self._score_recoreded = True
+        self.state = STATUS_SCORE
+
+
     def xy_to_row_col(self, x, y):
         # 将鼠标点击的坐标转换为矩阵中的行列
-        pass
+        row = (y - MATRIX_TOPLEFT[1]) // CELL_SIZE
+        col = (x - MATRIX_TOPLEFT[0]) // CELL_SIZE
+        return row, col
+
+
     def handle_mouse(self, mouse_pos):
         if self.animating or self.end_game() > 0:  # 出现死局或正在播放消除动画时，不处理鼠标点击事件
             return
@@ -145,11 +156,66 @@ class Manager:
                     sys.exit()
 
 
+    def reset_grid(self):
+        if not self.reset_layout:
+            return
+        for i in range(HEIGHT):
+            for j in range(WIDTH):
+                self.grid[i][j] = random.randint(0, 5)  # 随机生成水果类型，0-5表示6种水果
+        self.elminate_all(animate=False)  # 消除所有可以消除的水果，确保初始布局没有可消除的水果
+        self.reset_layout = False  # 重置标志位，避免重复生成
+
+
+    def process_swap(self):
+        # 处理水果交换逻辑, 判断能不能消除，记录消除哪些水果，分别积分是多少，还有没有连锁消除，积分
+        pass
+
+    def is_dead_map(self):
+        # 判断游戏是否出现死局，返回死局的数量
+        pass
+
+    def show_end_image(self, img):
+        # 显示游戏结束的图片，img为图片名称
+        if img == 'time_up':
+            self.end_img = ASSETS["time_is_over"]
+        elif img == 'dead':
+            self.end_img = ASSETS["no_fruit"]
+        self.end_timer = 90  # 显示图片的时间，单位为帧数 1s为 60帧，90帧约等于1.5秒
 
     def update(self):
         # 根据游戏状态更新游戏逻辑
-        pass
+        if self.state != STATUS_PLAYING:
+            return
+        # 初始化游戏框中的水果
+        self.reset_grid()
 
+        # 水果可交换
+        if self.exchange_status == 1 and not self.animating and self.end_timer == 0:
+            self.process_swap()  # 处理水果交换逻辑
+
+        # 激励图片
+        if self.feedback_timer >= 0:
+            self.feedback_timer -= 1
+
+        # 时间到
+        self.runtime = pygame.time.get_ticks() - self.start_time
+        if self.runtime >= GAME_TIME and not self.time_is_over:
+            self.time_is_over = True
+            self.show_end_image('time_up') # 显示时间到的图片
+
+        #死图
+        if self.end_game() > 0 and not self.death_sign and self.end_timer == 0:
+            self.death_sign = self.is_dead_map()
+            if self.death_sign:
+                self.show_end_image('dead') # 显示死图的图片
+
+        # 时间到和死图的图片显示完成后如何处理
+        if self.end_timer > 0:
+            self.end_timer -= 1
+            if self.end_timer == 0 and not self._score_recoreded:
+                self.go_to_score() # 显示分数界面
+            return
+        
     def draw(self):
         # 根据游戏状态绘制不同的界面
         pass
