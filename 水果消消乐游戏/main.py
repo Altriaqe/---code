@@ -97,13 +97,13 @@ class Manager:
         pass
 
 def main():
-    pygame.init()
-    screen = pygame.display.set_mode(SCREEN_SIZE)
-    pygame.display.set_caption("水果消消乐")
-    load_all_assets()
-    clock = pygame.time.Clock()
+    pygame.init()  # 初始化pygame
+    screen = pygame.display.set_mode(SCREEN_SIZE)  # 创建游戏窗口
+    pygame.display.set_caption("水果消消乐")  # 设置窗口标题
+    load_all_assets()  # 加载所有资源
+    clock = pygame.time.Clock()  # 创建时钟对象，控制游戏帧率
 
-    game = Manager(screen)
+    game = Manager(screen)  # 创建游戏管理器对象，负责游戏逻辑和界面绘制
     # 事件驱动
     while True:
         for event in pygame.event.get():
