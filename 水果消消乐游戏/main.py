@@ -220,6 +220,17 @@ class Manager:
 
     def play_clear_animation(self,cleared):
         #消除动画的显示
+        """
+        用角度和缩放比例来控制消除动画的播放，具体逻辑为：
+        1. 设置animating为True，表示正在播放消除动画
+        2. 获取需要消除的水果位置列表positions
+        3. 设置总帧数total_frames为12，表示消除动画播放的总帧数
+        4. 获取bling特效图片bling_img
+        5. 遍历每一帧，计算当前帧的进度progress，旋转角度angle和缩放比例scale
+        6. 遍历需要消除的水果位置，绘制砖块背景
+        7. 如果缩放比例scale大于等于0.1，旋转并缩放bling特效图片，并绘制在需要消除的水果位置上
+        8. 更新屏幕显示，并延迟20毫秒，模拟消除动画的效果
+        """
         self.animating = True
         positions = [(r,c) for  r,c,_ in cleared]
         total_frames = 12
@@ -497,10 +508,12 @@ class Manager:
         # 根据游戏状态绘制不同的界面
         # blit()函数是pygame中用于绘制图像的方法，第一个参数是要绘制的图像，第二个参数是图像在屏幕上的位置坐标
         if self.state == STATUS_START:
+            # 游戏开始界面
             self.screen.blit(ASSETS["bg_tree"], (0, 0))
             self.screen.blit(ASSETS["game_start_button"], (300, 250))
         
         elif self.state == STATUS_PLAYING:
+            # 游戏运行界面
             self.screen.blit(ASSETS["bg_playing"], (0, 0))
             self.screen.blit(ASSETS["exit"], (20, 530))
             self.screen.blit(ASSETS["board_score"], (736, 15))
@@ -511,6 +524,7 @@ class Manager:
             self.draw_grid_only()  # 绘制游戏矩阵中的水果
 
             if not self.time_is_over:
+                # 计算剩余时间，单位为秒
                 remain = max(0, GAME_TIME - self.running_time) // 1000
                 m, s = divmod(remain, 60) # 计算remain的分钟数和秒数，divmod()函数返回两个数相除的商和余数，分别对应分钟和秒数
                 surf = ASSETS["font_large"].render(f"{m:02d}:{s:02d}", True, (0, 0, 0)) # 使用pygame的字体渲染函数render()将时间字符串渲染为图像，True表示抗锯齿，(255, 255, 255)表示白色
