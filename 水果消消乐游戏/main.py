@@ -112,11 +112,15 @@ class Manager:
         self.end_timer = 0
 
 
-    def go_to_score(self):
-        # 记录总分分数并显示分数界面
+    def record_score(self):
+        # 记录当前局分数，避免重开或退出时丢分
         if not self._score_recorded:
             self.score_list.append(self.score)
             self._score_recorded = True
+
+    def go_to_score(self):
+        # 记录总分分数并显示分数界面
+        self.record_score()
         self.state = STATUS_SCORE
 
 
@@ -129,14 +133,17 @@ class Manager:
 
 
     def handle_mouse(self, mouse_pos):
+        """
+        根据鼠标所点位置，判断游戏状态，处理游戏逻辑
+        """
         if self.animating or self.end_timer > 0:  # 出现死局或正在播放消除动画时，不处理鼠标点击事件
             return
         
         x, y = mouse_pos
         if self.state == STATUS_START:
-            if 300 < x < 600 and 250 < y < 370:
+            if 300 < x < 600 and 250 < y < 370: # 点击开始游戏按钮
                 self.state = STATUS_PLAYING
-                self.reset_game()
+                self.reset_game() # 对游戏数据进行初始化
         elif self.state == STATUS_SCORE:
             if 620 < x < 820 and 160 < y < 220:
                 self.state = STATUS_PLAYING
@@ -150,10 +157,8 @@ class Manager:
                 return
 
         elif self.state == STATUS_PLAYING:
-            if 620 < x < 820 and 160 < y < 220:
-                self.state = STATUS_PLAYING
-                self.reset_game()
-            if 20 < x < 83 and 530 < y < 590:
+            if 20 < x < 83 and 530 < y < 590: # 点击退出按钮
+                self.record_score()
                 self.go_to_score()
                 return
 
