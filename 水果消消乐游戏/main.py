@@ -152,9 +152,7 @@ class Manager:
             if 620 < x < 820 and 400 < y < 460:
                 pygame.quit()
                 sys.exit()
-            if 20 < x < 83 and 530 < y < 590:
-                self.go_to_score()
-                return
+        
 
         elif self.state == STATUS_PLAYING:
             if 20 < x < 83 and 530 < y < 590: # 点击退出按钮
@@ -174,13 +172,21 @@ class Manager:
                         self.exchange_status = 1
 
 
-    def reset_grid(self):
+    def reset_grid(self, animate=False):
+        """
+        随机生成游戏矩阵中的水果，确保初始布局没有可以消除的水果
+        主要逻辑：
+        1. 如果reset_layout为False，说明已经生成过水果布局，不需要重新生成，直接返回
+        2. 遍历矩阵的每个格子，随机生成水果类型，0-5表示6种水果
+        3. 调用eliminate_all()函数消除所有可以消除的水果，确保初始布局没有可消除的水果
+        4. 将reset_layout设置为False，避免重复生成
+        """
         if not self.reset_layout:
             return
         for i in range(HEIGHT):
             for j in range(WIDTH):
                 self.grid[i][j] = random.randint(0, 5)  # 随机生成水果类型，0-5表示6种水果
-        self.eliminate_all(animate=True)  # 消除所有可以消除的水果，确保初始布局没有可消除的水果
+        self.eliminate_all(animate=animate)  # 消除所有可以消除的水果，确保初始布局没有可消除的水果, 对animate参数的设置为False，避免在初始化时播放消除动画
         self.reset_layout = False  # 重置标志位，避免重复生成
 
     def drop_fruits(self, animate=True):
